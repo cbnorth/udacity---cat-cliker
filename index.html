@@ -1,0 +1,103 @@
+<!DOCTYPE>
+<html>
+    <body>
+        <style type="text/css">
+            img {
+                max-width: 500px;
+            }
+        </style>
+        <h1> Cat Clicker</h1>
+        <div class="cat_list">
+        </div>
+        <div class="cat_display">
+        </div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function() { 
+                //setting up variables
+                var container = $('.cat_container');
+                var catDisplay = $('.cat_display');
+                var parent = null;
+                var counter_value = null;
+                var names = [];
+                var catList = ["banjo", "chewie", "beta", "maru", "joey"]
+                var catClickCount = [];
+                var position = null;
+
+
+                function setUp() {
+                    //loop through array and create elements
+                    for (var i = 0; i < catList.length; i++) {
+                        var cat = catList[i]
+
+                        $('.cat_list').append('<a href="#" name="' + cat+ '"" target=#' + cat + '>' + cat + '</a> ');
+
+                        catClickCount.push(0);
+                    };
+                };
+                
+                setUp();
+
+
+                function postCat(f) {
+                    $('.cat_container').remove();
+                    var thisCat = $(f.target).attr('name');
+                    position = ($(f.target).index());
+                    catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
+
+                };
+
+
+
+                //function to set the names of the cats
+                function setNames() {
+                    $('.cat_image').each(function(){
+                        names.push($(this).attr('name'));
+                    });
+
+                    $(container).each(function() {
+                        var i = $(this).index() - 1;
+                        $(this).prepend('<h2>' + names[i] + '</h2')
+                    });
+                };
+
+                setNames();
+
+
+                //function to get current value
+                function getValue(e) {
+                    console.log('go');
+                    parent = $(e.target).parent();
+                    var value = parent.find('p').html();
+                    counter_value = value;
+                    //increase counter value
+                    counter_value++
+
+                    updateCounter(e);
+                };
+
+                //function to update the counter for each cat
+                function updateCounter(e) {
+                    counter_value = $('.cat_container p').html();
+                    counter_value++
+                    $('.cat_container p').html(counter_value);
+                    catClickCount[position] = counter_value;
+                };
+
+
+                //events
+                //click the name and bring up the cat template
+                $(document.body).on('click', '.cat_list a', function(f){
+                    f.preventDefault();
+                    postCat(f);
+                });
+
+                //click the cat and increase the value
+                $(document.body).on('click', '.cat_image', function(e){
+                    updateCounter(e);
+                });
+            });
+        </script>
+    </body>
+</html>

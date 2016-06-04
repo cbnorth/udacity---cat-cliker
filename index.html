@@ -24,7 +24,7 @@
                 var counter_value = null;
                 var names = [];
                 var position = null;
-
+                var clickedCat = null;
 
                 //model
                 var model = {
@@ -35,20 +35,14 @@
                 var controller = {
                     //update counter data in the model based on clicks in the view
                     //get counter data for the view
-                    getVisibleCat: function() {
-                        var visibleCats = model.catList.filter(function(cat) {
-                            console.log('something here');
-                        })
-                    },
                     postCat: function(thisCatIndex, thisCatName) {
-                        console.log(thisCatIndex + thisCatName);
-                        // var thisCat = $(f.target).attr('name');
-                        // position = ($(f.target).index());
-                        var clickedCat = model.catList[thisCatIndex];
-                        clickedCat.visible = true;
-                        viewCats.render();
-                        // catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
-
+                        clickedCat = model.catList[thisCatIndex];
+                        viewCats.render(thisCatIndex);
+                    },
+                    updateCounter: function(thisCatIndex) {
+                        model.catClickCount[thisCatIndex]++
+                        console.log('1');
+                        $('.cat_container p').html(model.catClickCount[thisCatIndex]);
                     },
                     init: function() {
                         viewList.init();
@@ -66,7 +60,8 @@
 
                             $('.cat_list').append('<a href="#stuff" name="' + cat+ '"" target=#' + cat + '>' + cat + '</a> ');
 
-                            model.catClickCount.push(0);
+                            model.catClickCount.push(i);
+
                         };
                     },
                 };
@@ -81,57 +76,15 @@
                             controller.postCat(thisCatIndex, thisCatName);
                         });
                     },
-                    render: function(cat) {
-                        console.log('rendering');
-                        controller.getVisibleCat(cat);
+                    render: function(thisCatIndex) {
+                        catDisplay.append('<div class="cat_container"><h2>' + clickedCat + '</h2><img src="assets/images/' + clickedCat + '.jpg" class="cat_image" name="' + clickedCat+ '"/><div class="counter"><p>' + model.catClickCount[thisCatIndex] + '</p></div></div>')
+                        $(document.body).on('click', '.cat_image', function(e){
+                            controller.updateCounter(thisCatIndex);
+                        });
                     }
                 };
 
                 controller.init();
-
-
-                // function postCat(f) {
-                //     $('.cat_container').remove();
-                //     var thisCat = $(f.target).attr('name');
-                //     position = ($(f.target).index());
-                //     catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
-
-                // };
-
-
-
-                //function to get current value
-                function getValue(e) {
-                    console.log('go');
-                    parent = $(e.target).parent();
-                    var value = parent.find('p').html();
-                    counter_value = value;
-                    //increase counter value
-                    counter_value++
-
-                    updateCounter(e);
-                };
-
-                //function to update the counter for each cat
-                function updateCounter(e) {
-                    counter_value = $('.cat_container p').html();
-                    counter_value++
-                    $('.cat_container p').html(counter_value);
-                    catClickCount[position] = counter_value;
-                };
-
-
-                //events
-                //click the name and bring up the cat template
-                // $(document.body).on('click', '.cat_list a', function(f){
-                //     f.preventDefault();
-                //     postCat(f);
-                // });
-
-                //click the cat and increase the value
-                $(document.body).on('click', '.cat_image', function(e){
-                    updateCounter(e);
-                });
             });
         </script>
     </body>

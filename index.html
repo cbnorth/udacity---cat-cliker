@@ -15,54 +15,89 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
         <script type="text/javascript">
             $(function() { 
+                //reference: https://github.com/udacity/ud989-pizzamvo/blob/master/js/app.js
+                
                 //setting up variables
                 var container = $('.cat_container');
                 var catDisplay = $('.cat_display');
                 var parent = null;
                 var counter_value = null;
                 var names = [];
-                var catList = ["banjo", "chewie", "beta", "maru", "joey"]
-                var catClickCount = [];
                 var position = null;
 
 
-                function setUp() {
-                    //loop through array and create elements
-                    for (var i = 0; i < catList.length; i++) {
-                        var cat = catList[i]
-
-                        $('.cat_list').append('<a href="#" name="' + cat+ '"" target=#' + cat + '>' + cat + '</a> ');
-
-                        catClickCount.push(0);
-                    };
-                };
-                
-                setUp();
-
-
-                function postCat(f) {
-                    $('.cat_container').remove();
-                    var thisCat = $(f.target).attr('name');
-                    position = ($(f.target).index());
-                    catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
-
+                //model
+                var model = {
+                    catList: ["banjo", "chewie", "beta", "maru", "joey"],
+                    catClickCount: []
                 };
 
+                var controller = {
+                    //update counter data in the model based on clicks in the view
+                    //get counter data for the view
+                    getVisibleCat: function() {
+                        var visibleCats = model.catList.filter(function(cat) {
+                            console.log('something here');
+                        })
+                    },
+                    postCat: function(thisCatIndex, thisCatName) {
+                        console.log(thisCatIndex + thisCatName);
+                        // var thisCat = $(f.target).attr('name');
+                        // position = ($(f.target).index());
+                        var clickedCat = model.catList[thisCatIndex];
+                        clickedCat.visible = true;
+                        viewCats.render();
+                        // catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
 
+                    },
+                    init: function() {
+                        viewList.init();
+                        viewCats.init();
+                    }
+                };  
 
-                //function to set the names of the cats
-                function setNames() {
-                    $('.cat_image').each(function(){
-                        names.push($(this).attr('name'));
-                    });
+                var viewList = {
+                    //render view
+                    //click functions
 
-                    $(container).each(function() {
-                        var i = $(this).index() - 1;
-                        $(this).prepend('<h2>' + names[i] + '</h2')
-                    });
+                    init: function() {
+                        for (var i = 0; i < model.catList.length; i++) {
+                            var cat = model.catList[i]
+
+                            $('.cat_list').append('<a href="#stuff" name="' + cat+ '"" target=#' + cat + '>' + cat + '</a> ');
+
+                            model.catClickCount.push(0);
+                        };
+                    },
                 };
 
-                setNames();
+                var viewCats = {
+                    init: function(){
+                        $(document.body).on('click', '.cat_list a', function(f){
+                            f.preventDefault();
+                            var thisCatIndex = $(f.target).index();
+                            var thisCatName = $(f.target).attr('name');
+                            $('.cat_container').remove();
+                            controller.postCat(thisCatIndex, thisCatName);
+                        });
+                    },
+                    render: function(cat) {
+                        console.log('rendering');
+                        controller.getVisibleCat(cat);
+                    }
+                };
+
+                controller.init();
+
+
+                // function postCat(f) {
+                //     $('.cat_container').remove();
+                //     var thisCat = $(f.target).attr('name');
+                //     position = ($(f.target).index());
+                //     catDisplay.append('<div class="cat_container"><h2>' + thisCat + '</h2><img src="assets/images/' + thisCat + '.jpg" class="cat_image" name="' + thisCat+ '"/><div class="counter"><p>' + catClickCount[position] + '</p></div></div>')
+
+                // };
+
 
 
                 //function to get current value
@@ -88,10 +123,10 @@
 
                 //events
                 //click the name and bring up the cat template
-                $(document.body).on('click', '.cat_list a', function(f){
-                    f.preventDefault();
-                    postCat(f);
-                });
+                // $(document.body).on('click', '.cat_list a', function(f){
+                //     f.preventDefault();
+                //     postCat(f);
+                // });
 
                 //click the cat and increase the value
                 $(document.body).on('click', '.cat_image', function(e){
